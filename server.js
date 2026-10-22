@@ -6,10 +6,12 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: "1mb" }));
 
+// Home route
 app.get("/", (req, res) => {
   res.send("Project Anushka AI backend is running!");
 });
 
+// AI CHATBOT
 app.post("/api/chat", async (req, res) => {
   try {
     const question = req.body?.question;
@@ -29,59 +31,21 @@ app.post("/api/chat", async (req, res) => {
     const systemPrompt = `
 You are Anushka AI, a helpful learning assistant for students worldwide.
 
-Your main goal is to help students learn, study, develop skills, and prepare for their future.
+Help students learn, study, develop skills, and prepare for their future.
 
-YOUR CAPABILITIES:
+CAPABILITIES:
+1. Explain Maths, Physics, Chemistry, Biology, English, and other subjects step by step.
+2. Create organized notes with headings, definitions, examples, and summaries.
+3. Create MCQs with options A, B, C, D, correct answers, and explanations.
+4. Create daily and weekly study plans.
+5. Help with HTML, CSS, JavaScript, Python, and other programming topics.
+6. Give career guidance for resumes, interviews, jobs, internships, and scholarships.
+7. Reply in the language the student uses, using simple and friendly language.
+8. Be honest when unsure. Never invent job openings, deadlines, or verified facts.
+9. Do not claim to have searched the internet unless a search tool has actually been used.
+10. Help students understand answers rather than just memorize them.
 
-1. SMART AI TUTOR
-- Explain school and college subjects step by step.
-- Help with Maths, Physics, Chemistry, Biology, English, and other subjects.
-- Use simple words and examples.
-- Explain difficult concepts in an easy way.
-
-2. NOTES MAKER
-- Create clear, organized notes on any topic.
-- Use headings, bullet points, definitions, examples, and summaries.
-- Make short notes or detailed notes depending on the student's request.
-- Never claim notes are from a specific textbook unless that source is provided or verified.
-
-3. QUIZ AND MCQ MAKER
-- Create multiple-choice questions for practice.
-- Provide options A, B, C, and D.
-- Include correct answers and explanations when requested.
-- Ask questions one at a time if the student wants quiz practice.
-- Adjust the difficulty to the student's level.
-
-4. STUDY PLAN
-- Create practical daily or weekly study schedules.
-- Help students prepare for exams.
-- Include revision, breaks, and practice questions.
-
-5. CODING HELPER
-- Explain HTML, CSS, JavaScript, and other programming concepts.
-- Help find coding mistakes.
-- Provide code examples and explain how they work.
-
-6. CAREER GUIDANCE
-- Help with resumes, interviews, career choices, skills, jobs, internships, and scholarships.
-- Do not invent job openings, scholarship deadlines, or eligibility rules.
-- Explain when current information needs to be verified.
-
-7. LANGUAGE SUPPORT
-- Reply in the language the student uses.
-- Use simple English or Hindi when appropriate.
-- Be friendly, respectful, and encouraging.
-
-8. ANSWER QUALITY
-- Organize long answers with headings and bullet points.
-- Ask a short follow-up question if important information is missing.
-- Be honest when you are unsure.
-- Never claim to have searched the internet or verified current information unless a search tool is actually available.
-
-IMPORTANT LIMITATION:
-You do not have automatic internet search, live educational videos, or file-reading abilities unless those features are separately connected to the application. Never pretend those features are available when they are not.
-
-Always help the student understand the answer, not just memorize it.
+You are a student learning assistant. Be friendly, respectful, and encouraging.
 `;
 
     const response = await fetch(
@@ -115,8 +79,7 @@ Always help the student understand the answer, not just memorize it.
     if (!response.ok) {
       console.error("Groq API error:", {
         status: response.status,
-        error: data.error?.message || "Unknown API error",
-        code: data.error?.code
+        error: data.error?.message || "Unknown API error"
       });
 
       return res.status(502).json({
@@ -135,7 +98,7 @@ Always help the student understand the answer, not just memorize it.
     return res.json({ answer });
 
   } catch (error) {
-    console.error("Server error:", error.message);
+    console.error("Chat error:", error.message);
 
     return res.status(500).json({
       error: "Something went wrong. Please try again."
@@ -143,8 +106,88 @@ Always help the student understand the answer, not just memorize it.
   }
 });
 
+// YOUTUBE EDUCATIONAL VIDEO SEARCH
+app.get("/api/videos", async (req, res) => {
+  try {
+    const query = req.query.q;
+
+    if (typeof query !== "string" || !query.trim()) {
+      return res.status(400).json({
+        error: "Please enter a topic to search for videos."
+      });
+    }
+
+    if (query.length > 200) {
+      return res.status(400).json({
+        error: "Please search using a shorter topic."
+      });
+    }
+
+    if (!process.env.YOUTUBE_API_KEY) {
+      return res.status(500).json({
+        error: "YouTube search is not configured yet."
+      });
+    }
+
+    const params = new URLSearchParams({
+      part: "snippet",
+      type: "video",
+      maxResults: "10",
+      q: query.trim(),
+      safeSearch: "strict",
+      key: process.env.YOUTUBE_API_KEY
+    });
+
+    const youtubeResponse = await fetch(
+      "https://www.googleapis.com/youtube/v3/search?" + params.toString()
+    );
+
+    const data = await youtubeResponse.json();
+
+    if (!youtubeResponse.ok) {
+      console.error("YouTube API error:", {
+        status: youtubeResponse.status,
+        reason: data.error?.errors?.[0]?.reason || "Unknown API error"
+      });
+
+      return res.status(502).json({
+        error: "Video search is temporarily unavailable. Please try again."
+      });
+    }
+
+    const videos = (data.items || [])
+      .filter(item => item.id?.videoId)
+      .map(item => ({
+        title: item.snippet?.title || "Untitled video",
+        description: item.snippet?.description || "",
+        channel: item.snippet?.channelTitle || "YouTube channel",
+        thumbnail:
+          item.snippet?.thumbnails?.medium?.url ||
+          item.snippet?.thumbnails?.default?.url ||
+          "",
+        videoId: item.id.videoId,
+        url: "https://www.youtube.com/watch?v=" + item.id.videoId
+      }));
+
+    return res.json({
+      query: query.trim(),
+      total: videos.length,
+      videos
+    });
+
+  } catch (error) {
+    console.error("Video search error:", error.message);
+
+    return res.status(500).json({
+      error: "Could not search for videos. Please try again."
+    });
+  }
+});
+
+// START SERVER
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
   console.log("Anushka AI server running on port " + PORT);
 });
+```
