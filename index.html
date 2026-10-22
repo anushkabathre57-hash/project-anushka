@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#d4af37">
+  <meta name="description" content="Project Anushka helps students explore AI assistance, jobs, scholarships, courses and career opportunities.">
   <link rel="manifest" href="./manifest.json">
-<meta name="theme-color" content="#d4af37">
-  <meta name="description" content="Project Anushka helps students explore jobs, scholarships, courses and career opportunities.">
-  <title>Project Anushka | Student Opportunity Platform</title>
   <link rel="icon" type="image/png" href="./icon-192.png">
+  <title>Project Anushka | Student Opportunity Platform</title>
 
   <style>
     :root {
@@ -16,15 +16,12 @@
       --panel: #171717;
       --white: #ffffff;
       --muted: #c7c7c7;
+      --border: #4c3e19;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
-    html {
-      scroll-behavior: smooth;
-    }
+    html { scroll-behavior: smooth; }
 
     body {
       margin: 0;
@@ -64,9 +61,7 @@
       font-size: 14px;
     }
 
-    nav a:hover {
-      color: var(--gold);
-    }
+    nav a:hover { color: var(--gold); }
 
     .hero {
       text-align: center;
@@ -87,10 +82,7 @@
       margin: 18px 0;
     }
 
-    h1 span,
-    .gold {
-      color: var(--gold);
-    }
+    h1 span, .gold { color: var(--gold); }
 
     .hero p {
       color: var(--muted);
@@ -108,28 +100,21 @@
       font-weight: bold;
       text-decoration: none;
       cursor: pointer;
+      font-size: 15px;
     }
 
-    .button:hover {
-      background: #f0d46b;
-    }
+    .button:hover { background: #f0d46b; }
 
-    section {
-      padding: 50px 7%;
-    }
+    section { padding: 50px 7%; }
 
     .section-heading {
       text-align: center;
       margin-bottom: 28px;
     }
 
-    .section-heading h2 {
-      margin-bottom: 6px;
-    }
+    .section-heading h2 { margin-bottom: 6px; }
 
-    .section-heading p {
-      color: var(--muted);
-    }
+    .section-heading p { color: var(--muted); }
 
     .search-box {
       max-width: 650px;
@@ -138,18 +123,19 @@
       gap: 10px;
     }
 
-    input {
+    input, textarea {
       min-width: 0;
-      flex: 1;
+      width: 100%;
       padding: 14px;
       border: 1px solid #5c4a1a;
       background: #191919;
       color: white;
       border-radius: 6px;
       font-size: 15px;
+      font-family: inherit;
     }
 
-    input:focus {
+    input:focus, textarea:focus {
       outline: 2px solid var(--gold);
     }
 
@@ -170,7 +156,7 @@
 
     .card {
       background: var(--panel);
-      border: 1px solid #4c3e19;
+      border: 1px solid var(--border);
       border-radius: 12px;
       padding: 24px;
       transition: transform 0.2s, border-color 0.2s;
@@ -181,9 +167,7 @@
       border-color: var(--gold);
     }
 
-    .card .symbol {
-      font-size: 30px;
-    }
+    .card .symbol { font-size: 30px; }
 
     .card h3 {
       color: var(--gold);
@@ -195,14 +179,77 @@
       font-size: 14px;
     }
 
-    .card[hidden] {
-      display: none;
-    }
+    .card[hidden] { display: none; }
 
     .card a {
       color: var(--gold);
       text-decoration: none;
       font-weight: bold;
+    }
+
+    .ai-section { background: #111; }
+
+    .ai-panel {
+      max-width: 850px;
+      margin: auto;
+      padding: 25px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+    }
+
+    .ai-badge {
+      display: inline-block;
+      padding: 5px 12px;
+      border-radius: 20px;
+      color: var(--gold);
+      background: #29220d;
+      font-size: 12px;
+      margin-bottom: 12px;
+    }
+
+    .ai-panel label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 110px;
+      margin-bottom: 12px;
+    }
+
+    .ai-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    #aiStatus {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .ai-answer {
+      margin-top: 22px;
+      padding: 18px;
+      background: #101010;
+      border-left: 3px solid var(--gold);
+      border-radius: 6px;
+      min-height: 60px;
+      overflow-wrap: anywhere;
+    }
+
+    .ai-answer h3 {
+      margin-top: 0;
+      color: var(--gold);
+    }
+
+    .ai-answer p {
+      white-space: pre-wrap;
+      margin-bottom: 0;
     }
 
     .about {
@@ -225,21 +272,11 @@
     }
 
     @media (max-width: 600px) {
-      header {
-        justify-content: center;
-      }
-
-      nav {
-        justify-content: center;
-      }
-
-      .search-box {
-        flex-direction: column;
-      }
-
-      .hero {
-        padding-top: 50px;
-      }
+      header { justify-content: center; }
+      nav { justify-content: center; }
+      .search-box { flex-direction: column; }
+      .hero { padding-top: 50px; }
+      .ai-panel { padding: 18px; }
     }
   </style>
 </head>
@@ -247,9 +284,9 @@
 <body>
   <header>
     <div class="logo">PROJECT ANUSHKA</div>
-
     <nav aria-label="Main navigation">
       <a href="#home">Home</a>
+      <a href="#ai">Anushka AI</a>
       <a href="#opportunities">Opportunities</a>
       <a href="#about">About</a>
     </nav>
@@ -258,15 +295,44 @@
   <main>
     <section class="hero" id="home">
       <div class="tag">LEARN. GROW. SUCCEED.</div>
-
       <h1>Your Future <span>Starts Here.</span></h1>
-
       <p>
-        One platform for students to discover educational resources,
-        job opportunities, scholarships and useful skills.
+        One platform for students worldwide to explore AI assistance,
+        educational resources, jobs, scholarships and useful skills.
       </p>
+      <a class="button" href="#ai">Ask Anushka AI</a>
+      <a class="button" href="#opportunities" style="margin-left:8px">Explore Opportunities</a>
+    </section>
 
-      <a class="button" href="#opportunities">Explore Opportunities</a>
+    <section class="ai-section" id="ai">
+      <div class="section-heading">
+        <h2>Meet <span class="gold">Anushka AI</span> 🤖</h2>
+        <p>Ask a question about studies, careers, skills or general knowledge.</p>
+      </div>
+
+      <div class="ai-panel">
+        <span class="ai-badge">AI STUDENT ASSISTANT</span>
+
+        <form id="aiForm">
+          <label for="aiQuestion">What would you like to know?</label>
+          <textarea
+            id="aiQuestion"
+            maxlength="4000"
+            placeholder="Example: How can I learn web development for free?"
+            required
+          ></textarea>
+
+          <div class="ai-actions">
+            <button class="button" id="aiButton" type="submit">Ask Anushka AI</button>
+            <span id="aiStatus" role="status" aria-live="polite"></span>
+          </div>
+        </form>
+
+        <div class="ai-answer" id="aiAnswer" aria-live="polite">
+          <h3>AI Answer</h3>
+          <p>Your answer will appear here.</p>
+        </div>
+      </div>
     </section>
 
     <section id="opportunities">
@@ -330,11 +396,9 @@
       <div class="section-heading">
         <h2>About <span class="gold">Project Anushka</span></h2>
       </div>
-
       <p>
-        Our vision is to help students discover opportunities,
-        access learning resources and make informed decisions
-        about their future.
+        Our vision is to help students around the world discover opportunities,
+        access learning resources and make informed decisions about their future.
       </p>
     </section>
   </main>
@@ -358,22 +422,18 @@
       cards.forEach(function(card) {
         const searchableText =
           card.innerText.toLowerCase() + " " +
-          card.dataset.keywords.toLowerCase();
+          (card.dataset.keywords || "").toLowerCase();
 
         const matches = query === "" || searchableText.includes(query);
-
         card.hidden = !matches;
 
-        if (matches) {
-          matchCount++;
-        }
+        if (matches) matchCount++;
       });
 
       if (query === "") {
         searchMessage.textContent = "Showing all opportunities.";
       } else if (matchCount > 0) {
-        searchMessage.textContent =
-          matchCount + " matching section(s) found.";
+        searchMessage.textContent = matchCount + " matching section(s) found.";
       } else {
         searchMessage.textContent =
           "No matches found. Try jobs, scholarships, courses or career.";
@@ -383,12 +443,79 @@
     searchButton.addEventListener("click", searchOpportunities);
 
     searchInput.addEventListener("keydown", function(event) {
-      if (event.key === "Enter") {
-        searchOpportunities();
-      }
+      if (event.key === "Enter") searchOpportunities();
     });
 
     searchInput.addEventListener("input", searchOpportunities);
+
+    const aiForm = document.getElementById("aiForm");
+    const aiQuestion = document.getElementById("aiQuestion");
+    const aiButton = document.getElementById("aiButton");
+    const aiStatus = document.getElementById("aiStatus");
+    const aiAnswer = document.getElementById("aiAnswer");
+
+    aiForm.addEventListener("submit", async function(event) {
+      event.preventDefault();
+
+      const question = aiQuestion.value.trim();
+
+      if (!question) {
+        aiStatus.textContent = "Please type a question first.";
+        return;
+      }
+
+      aiButton.disabled = true;
+      aiButton.textContent = "Thinking...";
+      aiStatus.textContent = "Anushka AI is preparing your answer. Please wait.";
+      aiAnswer.replaceChildren();
+
+      const answerHeading = document.createElement("h3");
+      answerHeading.textContent = "AI Answer";
+      const answerParagraph = document.createElement("p");
+      answerParagraph.textContent = "Loading your answer...";
+      aiAnswer.append(answerHeading, answerParagraph);
+
+      try {
+        const response = await fetch(
+          "https://project-anushka.onrender.com/api/chat",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ question: question })
+          }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "The AI service is temporarily unavailable.");
+        }
+
+        answerParagraph.textContent = data.answer || "No answer received.";
+        aiStatus.textContent = "Answer received.";
+      } catch (error) {
+        answerParagraph.textContent =
+          error.message ||
+          "Could not connect to Anushka AI. Please try again.";
+
+        aiStatus.textContent =
+          "If this is the first request in a while, the server may need time to wake up.";
+      } finally {
+        aiButton.disabled = false;
+        aiButton.textContent = "Ask Anushka AI";
+      }
+    });
+
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", function() {
+        navigator.serviceWorker.register("./service-worker.js")
+          .catch(function(error) {
+            console.log("Service worker registration failed:", error);
+          });
+      });
+    }
   </script>
 </body>
 </html>
