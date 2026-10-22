@@ -27,7 +27,7 @@ app.post("/api/chat", async (req, res) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-         "Authorization": "Bearer " + process.env.GROQ_API_KEY
+          "Authorization": "Bearer " + process.env.GROQ_API_KEY
         },
         body: JSON.stringify({
           model: "llama-3.3-70b-versatile",
@@ -57,6 +57,7 @@ app.post("/api/chat", async (req, res) => {
     res.json({
       answer: data.choices?.[0]?.message?.content || "No answer received."
     });
+
   } catch (error) {
     console.error("Server error:", error);
     res.status(500).json({
@@ -68,6 +69,6 @@ app.post("/api/chat", async (req, res) => {
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-  console.log(`Anushka AI server running on port ${PORT}`);
+  console.log("Anushka AI server running on port " + PORT);
 });
 ```
