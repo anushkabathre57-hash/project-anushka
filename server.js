@@ -1,3 +1,4 @@
+
 const express = require("express");
 const cors = require("cors");
 
@@ -12,9 +13,9 @@ app.get("/", (req, res) => {
 
 app.post("/api/chat", async (req, res) => {
   try {
-    const question = req.body.question;
+    const question = req.body?.question;
 
-    if (!question || typeof question !== "string") {
+    if (!question || typeof question !== "string" || !question.trim()) {
       return res.status(400).json({
         error: "Please enter a question."
       });
@@ -35,17 +36,19 @@ app.post("/api/chat", async (req, res) => {
           "Authorization": "Bearer " + process.env.GROQ_API_KEY
         },
         body: JSON.stringify({
-          model: "llama-3.3-70b-versatile",
+          model: "openai/gpt-oss-20b",
           messages: [
             {
               role: "system",
-              content: "You are Anushka AI, a helpful assistant for students. Answer clearly and simply."
+              content: "You are Anushka AI, a helpful assistant for students worldwide. Answer clearly, politely, and in simple language. Help with studies, notes, career guidance, skills, and learning. If a student asks in Hindi, answer in Hindi or simple Hinglish. If they ask in English, answer in English."
             },
             {
               role: "user",
-              content: question
+              content: question.trim()
             }
-          ]
+          ],
+          temperature: 0.7,
+          max_tokens: 1000
         })
       }
     );
@@ -53,19 +56,31 @@ app.post("/api/chat", async (req, res) => {
     const data = await response.json();
 
     if (!response.ok) {
-      console.error("Groq API error:", data);
+      console.error("Groq API error:", {
+        status: response.status,
+        error: data.error?.message || "Unknown API error",
+        code: data.error?.code
+      });
+
       return res.status(502).json({
         error: "AI service could not answer right now. Please try again."
       });
     }
 
-    res.json({
-      answer: data.choices?.[0]?.message?.content || "No answer received."
-    });
+    const answer = data.choices?.[0]?.message?.content;
+
+    if (!answer) {
+      return res.status(502).json({
+        error: "The AI did not return an answer. Please try again."
+      });
+    }
+
+    return res.json({ answer });
 
   } catch (error) {
-    console.error("Server error:", error);
-    res.status(500).json({
+    console.error("Server error:", error.message);
+
+    return res.status(500).json({
       error: "Something went wrong. Please try again."
     });
   }
@@ -76,3 +91,4 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log("Anushka AI server running on port " + PORT);
 });
+```
