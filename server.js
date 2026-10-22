@@ -1,4 +1,3 @@
-```javascript
 const express = require("express");
 const cors = require("cors");
 
@@ -18,6 +17,12 @@ app.post("/api/chat", async (req, res) => {
     if (!question || typeof question !== "string") {
       return res.status(400).json({
         error: "Please enter a question."
+      });
+    }
+
+    if (!process.env.GROQ_API_KEY) {
+      return res.status(500).json({
+        error: "AI service is not configured yet."
       });
     }
 
@@ -71,4 +76,3 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log("Anushka AI server running on port " + PORT);
 });
-```
