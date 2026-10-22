@@ -1,4 +1,4 @@
-
+```javascript
 const express = require("express");
 const cors = require("cors");
 
@@ -15,7 +15,7 @@ app.post("/api/chat", async (req, res) => {
   try {
     const question = req.body?.question;
 
-    if (!question || typeof question !== "string" || !question.trim()) {
+    if (typeof question !== "string" || !question.trim()) {
       return res.status(400).json({
         error: "Please enter a question."
       });
@@ -33,14 +33,14 @@ app.post("/api/chat", async (req, res) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": "Bearer " + process.env.GROQ_API_KEY
+          "Authorization": `Bearer ${process.env.GROQ_API_KEY}`
         },
         body: JSON.stringify({
           model: "openai/gpt-oss-20b",
           messages: [
             {
               role: "system",
-              content: "You are Anushka AI, a helpful assistant for students worldwide. Answer clearly, politely, and in simple language. Help with studies, notes, career guidance, skills, and learning. If a student asks in Hindi, answer in Hindi or simple Hinglish. If they ask in English, answer in English."
+              content: "You are Anushka AI, a helpful assistant for students worldwide. Answer clearly and simply. Help with studies, notes, career guidance, skills, and learning. Reply in the language the student uses."
             },
             {
               role: "user",
