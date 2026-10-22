@@ -32,7 +32,7 @@ app.post("/api/chat", async (req, res) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-         "Authorization": "Bearer " + process.env.GROQ_API_KEY
+          "Authorization": "Bearer " + process.env.GROQ_API_KEY
         },
         body: JSON.stringify({
           model: "openai/gpt-oss-20b",
@@ -90,4 +90,3 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log("Anushka AI server running on port " + PORT);
 });
-```
