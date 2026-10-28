@@ -1,50 +1,140 @@
-   at node:internal/main/run_main_module:33:47
 
-Node.js v24.22.1
-==> Exited with status 1
-==> Common ways to troubleshoot your deploy: https://render.com/docs/troubleshooting-deploys
-==> Running 'npm start'
-==> Deploying...
-==> Setting WEB_CONCURRENCY=1 by default, based on available CPUs in the instance
-> project-anushka-ai@1.0.0 start
-> node server.js
+const express = require("express");
+const cors = require("cors");
 
-/opt/render/project/src/server.js:194
+const app = express();
 
+app.use(cors());
+app.use(express.json());
 
+app.get("/", (req, res) => {
+  res.send("Project Anushka server is running!");
+});
 
-SyntaxError: Unexpected end of input
-    at wrapSafe (node:internal/modules/cjs/loader:1861:18)
-    at Module._compile (node:internal/modules/cjs/loader:1903:20)
-    at Object..js (node:internal/modules/cjs/loader:2060:10)
-    at Module.load (node:internal/modules/cjs/loader:1651:32)
-    at Module._load (node:internal/modules/cjs/loader:1443:12)
-    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
-    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
-    at node:internal/main/run_main_module:33:47
+app.get("/healthz", (req, res) => {
+  res.status(200).json({ status: "ok" });
+});
 
-Node.js v24.22.1
-==> Exited with status 1
-==> Common ways to troubleshoot your deploy: https://render.com/docs/troubleshooting-deploys
-==> Running 'npm start'
+app.post("/api/chat", async (req, res) => {
+  try {
+    const question = req.body?.question;
 
-> project-anushka-ai@1.0.0 start
-> node server.js
+    if (!question || typeof question !== "string") {
+      return res.status(400).json({
+        error: "Please enter a question."
+      });
+    }
 
-/opt/render/project/src/server.js:194
+    if (!process.env.GROQ_API_KEY) {
+      return res.status(500).json({
+        error: "AI service is not configured yet."
+      });
+    }
 
+    const response = await fetch(
+      "https://api.groq.com/openai/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.GROQ_API_KEY}`
+        },
+        body: JSON.stringify({
+          model: "openai/gpt-oss-20b",
+          messages: [
+            {
+              role: "system",
+              content:
+                "You are Anushka AI, a helpful assistant for students worldwide. Explain in simple language and help with study, jobs, scholarships, courses, and careers."
+            },
+            {
+              role: "user",
+              content: question
+            }
+          ]
+        })
+      }
+    );
 
+    const data = await response.json();
 
-SyntaxError: Unexpected end of input
-    at wrapSafe (node:internal/modules/cjs/loader:1861:18)
-    at Module._compile (node:internal/modules/cjs/loader:1903:20)
-    at Object..js (node:internal/modules/cjs/loader:2060:10)
-    at Module.load (node:internal/modules/cjs/loader:1651:32)
-    at Module._load (node:internal/modules/cjs/loader:1443:12)
-    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
-    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
-    at node:internal/main/run_main_module:33:47
+    if (!response.ok) {
+      console.error("Groq API error:", data);
+      return res.status(502).json({
+        error: "AI service could not answer right now."
+      });
+    }
 
-Node.js v24.22.1
-==> Port scan timeout reached, no open ports detected. Bind your service to at least one port. If you don't need to receive traffic on any port, create a background worker instead.
-==> Docs on specifying a port: https://render.com/docs/web-services#port-binding
+    res.json({
+      answer: data.choices?.[0]?.message?.content ||
+        "Sorry, please try again."
+    });
+  } catch (error) {
+    console.error("Chat error:", error.message);
+    res.status(500).json({
+      error: "Something went wrong. Please try again."
+    });
+  }
+});
+
+app.get("/api/videos", async (req, res) => {
+  try {
+    const query = req.query.q;
+
+    if (!query || typeof query !== "string") {
+      return res.status(400).json({
+        error: "Please enter a video search topic."
+      });
+    }
+
+    if (!process.env.YOUTUBE_API_KEY) {
+      return res.status(500).json({
+        error: "Video search is not configured yet."
+      });
+    }
+
+    const params = new URLSearchParams({
+      part: "snippet",
+      type: "video",
+      maxResults: "10",
+      q: query,
+      key: process.env.YOUTUBE_API_KEY
+    });
+
+    const response = await fetch(
+      `https://www.googleapis.com/youtube/v3/search?${params}`
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("YouTube API error:", data);
+      return res.status(502).json({
+        error: "Video search failed. Please try again."
+      });
+    }
+
+    const items = (data.items || []).map((video) => ({
+      id: video.id.videoId,
+      title: video.snippet.title,
+      description: video.snippet.description,
+      thumbnail: video.snippet.thumbnails?.medium?.url ||
+        video.snippet.thumbnails?.default?.url || "",
+      channelTitle: video.snippet.channelTitle,
+      url: `https://www.youtube.com/watch?v=${video.id.videoId}`
+    }));
+
+    res.json({ items });
+  } catch (error) {
+    console.error("Video search error:", error.message);
+    res.status(500).json({
+      error: "Something went wrong while searching videos."
+    });
+  }
+});
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Project Anushka server running on port ${PORT}`);
+});
