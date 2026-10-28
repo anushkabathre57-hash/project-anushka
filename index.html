@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,7 +21,6 @@
     }
 
     * { box-sizing: border-box; }
-
     html { scroll-behavior: smooth; }
 
     body {
@@ -118,7 +118,6 @@
     }
 
     .section-heading h2 { margin-bottom: 6px; }
-
     .section-heading p { color: var(--muted); }
 
     .search-box {
@@ -173,11 +172,7 @@
     }
 
     .card .symbol { font-size: 30px; }
-
-    .card h3 {
-      color: var(--gold);
-      margin-bottom: 8px;
-    }
+    .card h3 { color: var(--gold); margin-bottom: 8px; }
 
     .card p {
       color: var(--muted);
@@ -603,12 +598,12 @@
           throw new Error(data.error || "Video search failed. Please try again.");
         }
 
-        if (!Array.isArray(data.videos) || data.videos.length === 0) {
+        if (!Array.isArray(data.items) || data.items.length === 0) {
           videoStatus.textContent = "No videos found. Try another search topic.";
           return;
         }
 
-        data.videos.forEach(function(video) {
+        data.items.forEach(function(video) {
           const article = document.createElement("article");
           article.className = "video-card";
 
@@ -624,7 +619,7 @@
           title.textContent = video.title;
 
           const channel = document.createElement("p");
-          channel.textContent = "Channel: " + video.channel;
+          channel.textContent = "Channel: " + video.channelTitle;
 
           const description = document.createElement("p");
           description.textContent =
@@ -643,7 +638,7 @@
         });
 
         videoStatus.textContent =
-          "Found " + data.videos.length + " video(s). Select one to watch.";
+          "Found " + data.items.length + " video(s). Select one to watch.";
 
       } catch (error) {
         videoStatus.textContent =
@@ -666,4 +661,3 @@
   </script>
 </body>
 </html>
-```
